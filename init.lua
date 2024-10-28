@@ -162,7 +162,7 @@ vim.opt.scrolloff = 10
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+--vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- INFO:Changed:dima Disable default keymap.
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -966,10 +966,123 @@ require('lazy').setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
+---------------------------------------------------------------------------------------- == My Config ==
+
+-- INFO:Works:dima
+-- Go to last known position in file when opening it
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--   callback = function()
+--     local mark       = vim.api.nvim_buf_get_mark(0, '"')
+--     local line_count = vim.api.nvim_buf_line_count(0)
+--
+--     if 0 < mark[1] and mark[1] <= line_count then
+--       vim.api.nvim_win_set_cursor(0, mark)
+--     end
+--   end,
+-- })
+
+-- INFO:Works:dima
+-- -- Create autocommand group to avoid duplicate commands
+-- vim.api.nvim_create_augroup("RestoreViewGroup", {})
+--
+-- -- Save cursor position and viewport when leaving the buffer
+-- vim.api.nvim_create_autocmd("BufWinLeave", {
+--   group = "RestoreViewGroup",
+--   callback = function()
+--     local view = vim.fn.winsaveview()
+--     vim.b.saved_view = view -- Store view settings in buffer variable
+--   end,
+-- })
+--
+-- -- Restore cursor position and viewport when entering the buffer
+-- vim.api.nvim_create_autocmd("BufWinEnter", {
+--   group = "RestoreViewGroup",
+--   callback = function()
+--     local view = vim.b.saved_view
+--     if view then
+--       vim.fn.winrestview(view) -- Restore saved view
+--     end
+--   end,
+-- })
+
+-- Directory to save view data
+local view_dir = vim.fn.stdpath("data") .. "/views"
+vim.fn.mkdir(view_dir, "p")  -- Ensure the directory exists
+
+-- Function to get the file path for a given buffer
+local function get_view_file_path(bufnr)
+  local file_name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p")
+  return view_dir .. "/" .. vim.fn.sha256(file_name) .. ".lua"
+end
+
+-- Save the view as a Lua table to a file
+local function save_view(view, path)
+  local file = io.open(path, "w")
+  if file then
+    file:write("return " .. vim.inspect(view))  -- Serialize table as Lua code
+    file:close()
+  end
+end
+
+-- Load the view from a Lua file
+local function load_view(path)
+  local ok, view = pcall(dofile, path)
+  return ok and view or nil
+end
+
+-- Save view on buffer leave
+vim.api.nvim_create_autocmd("BufWinLeave", {
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local view = vim.fn.winsaveview()
+    local path = get_view_file_path(bufnr)
+    save_view(view, path)
+    -- print("saved")
+  end,
+})
+
+-- Load view on buffer enter
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local path = get_view_file_path(bufnr)
+    local view = load_view(path)
+    if view then
+      vim.fn.winrestview(view)
+      -- print("loaded")
+    end
+  end,
+})
+
 -- Use my old vim config for now. (2024-10-28)
 vim.cmd 'source ~/.vimrc'
 
-vim.cmd 'set formatoptions=croql'
 vim.cmd 'set signcolumn=no'
 vim.cmd 'set laststatus=1'
 vim.cmd 'set shortmess=filnxtToO'
+vim.cmd 'set textwidth=104'
+vim.cmd 'set formatoptions=croql'
+
+--
+-- :verbose set <option>?
+--
+-- vim.api.nvim_create_autocmd("OptionSet", {
+--   pattern = "textwidth",
+--   callback = function()
+--     print("textwidth changed to " .. vim.opt.textwidth:get())
+--     print(debug.traceback()) -- Prints a stack trace for debugging
+--   end,
+-- })
+
+-- Disable the loading for all the default "*.vim" files based on file extension.
+-- vim.g.loaded_ftplugin = 1 -- INFO:Doesn't_Work:dima
+
+-- INFO:Works:dima
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "rust",
+  callback = function()
+    -- Reset to desired values.
+    vim.opt_local.textwidth = 104 --vim.opt.textwidth:get()
+    vim.opt_local.formatoptions = 'croql' --vim.opt.formatoptions:get()
+  end,
+})
