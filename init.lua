@@ -468,7 +468,7 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       -- INFO:Changed:dima Disable preinstalled plugin. This depends on "nvim-cmp" plugin.
-      { 'hrsh7th/cmp-nvim-lsp',    enabled = false },
+      { 'hrsh7th/cmp-nvim-lsp', enabled = false },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -869,20 +869,22 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       -- require('mini.surround').setup() -- INFO:Changed:dima Disable preinstalled plugin.
 
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+-- INFO:Changed:dima Disable preinstalled plugin.                                            == START ==
+      -- -- Simple and easy statusline.
+      -- --  You could remove this setup call if you don't like it,
+      -- --  and try some other statusline plugin
+      -- local statusline = require 'mini.statusline'
+      -- -- set use_icons to true if you have a Nerd Font
+      -- statusline.setup { use_icons = vim.g.have_nerd_font }
+      --
+      -- -- You can configure sections in the statusline by overriding their
+      -- -- default behavior. For example, here we set the section for
+      -- -- cursor location to LINE:COLUMN
+      -- ---@diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
+-- INFO:Changed:dima Disable preinstalled plugin.                                              == END ==
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -966,5 +968,8 @@ require('lazy').setup({
 
 -- Use my old vim config for now. (2024-10-28)
 vim.cmd 'source ~/.vimrc'
+
 vim.cmd 'set formatoptions=croql'
 vim.cmd 'set signcolumn=no'
+vim.cmd 'set laststatus=1'
+vim.cmd 'set shortmess=filnxtToO'
