@@ -230,6 +230,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'nordtheme/vim', -- INFO:Changed:dima Install the nord colorscheme.
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -245,6 +246,7 @@ require('lazy').setup({
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
+    enabled = false, -- INFO:Changed:dima Disable preinstalled plugin.
     opts = {
       signs = {
         add = { text = '+' },
@@ -465,7 +467,8 @@ require('lazy').setup({
       { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
-      'hrsh7th/cmp-nvim-lsp',
+      -- INFO:Changed:dima Disable preinstalled plugin. This depends on "nvim-cmp" plugin.
+      { 'hrsh7th/cmp-nvim-lsp',    enabled = false },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -593,7 +596,8 @@ require('lazy').setup({
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+      -- INFO:Changed:dima Disable preinstalled plugin.
+      -- capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -667,6 +671,7 @@ require('lazy').setup({
 
   { -- Autoformat
     'stevearc/conform.nvim',
+    enabled = false, -- INFO:Changed:dima Disable preinstalled plugin.
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
     keys = {
@@ -710,6 +715,7 @@ require('lazy').setup({
 
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
+    enabled = false, -- INFO:Changed:dima Disable preinstalled plugin.
     event = 'InsertEnter',
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
@@ -861,7 +867,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- require('mini.surround').setup() -- INFO:Changed:dima Disable preinstalled plugin.
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -888,7 +894,10 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query',
+        'vim', 'vimdoc'
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -954,3 +963,8 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- Use my old vim config for now. (2024-10-28)
+vim.cmd 'source ~/.vimrc'
+vim.cmd 'set formatoptions=croql'
+vim.cmd 'set signcolumn=no'
